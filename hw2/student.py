@@ -72,7 +72,7 @@ def convertNetOutput(ratingOutput, categoryOutput):
     rating, and 0, 1, 2, 3, or 4 for the business category.  If your network
     outputs a different representation convert the output here.
     """
-    s = int(ratingOutput.size()[0])
+    s = ratingOutput.size()[0]
     r = torch.rand(s)
     counter = 0
     for i in ratingOutput:
