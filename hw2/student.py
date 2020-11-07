@@ -145,6 +145,10 @@ class loss(nn.Module):
         self.r.backward()
         self.c.backward()
         pass
+
+    def item(self):
+        return (self.r.item() + self.c.item())/2
+
 net = network()
 lossFunc = loss()
 

@@ -78,7 +78,7 @@ def main():
             # Minimise the loss according to the gradient.
             optimiser.step()
 
-            #runningLoss += loss.item()
+            runningLoss += loss.item()
 
             if i % 32 == 31:
                 print("Epoch: %2d, Batch: %4d, Loss: %.3f"
