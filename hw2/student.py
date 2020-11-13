@@ -19,11 +19,10 @@ You may change this variable in the config.py file.
 You may only use GloVe 6B word vectors as found in the torchtext package.
 """
 
-# import torch
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as toptim
+import torch.nn.functional as F
 from torchtext.vocab import GloVe
 # import numpy as np
 # import sklearn
@@ -76,10 +75,10 @@ def convertNetOutput(ratingOutput, categoryOutput):
     r = torch.rand(s)
     counter = 0
     for i in ratingOutput:
-        if i[0] > i[1]:
-            r[counter] = 0
-        else:
+        if i[0] < i[1]:
             r[counter] = 1
+        else:
+            r[counter] = 0
         counter+=1
 
     c = torch.rand(s)
@@ -106,24 +105,21 @@ class network(nn.Module):
 
     def __init__(self):
         super(network, self).__init__()
-        self.cat_in = nn.Linear(50,70)
-        self.cat_out = nn.Linear(70,5)
-
-        self.rat_in = nn.Linear(50,70)
-        self.rat_out = nn.Linear(70,2)
+        self.hid_size = 200
+        self.layer = 2
+        self.lstm = nn.LSTM(input_size = 50, hidden_size=self.hid_size, num_layers=self.layer,batch_first=True)
+        self.mid = nn.Linear(self.hid_size, 100)
+        self.rat = nn.Linear(100, 2)
+        self.cat = nn.Linear(100, 5)
 
     def forward(self, input, length):
-        input = torch.sum(input, dim=1)
-        input = torch.transpose(input,0,1)
-        input = torch.div(input, length)
-        input = torch.transpose(input,0,1)
+        out, (hn, cn) = self.lstm(input)
 
-        r = F.tanh(self.rat_in(input))
-        r = F.log_softmax(self.rat_out(r))
+        out = F.tanh(self.mid(out[:,-1,:]))
+        rat_out = F.log_softmax(self.rat(out))
+        cat_out = F.log_softmax(self.cat(out))
 
-        c = F.tanh(self.cat_in(input))
-        c = F.log_softmax(self.cat_out(c))
-        return r,c
+        return rat_out, cat_out
 
 class loss(nn.Module):
     """
@@ -133,21 +129,21 @@ class loss(nn.Module):
 
     def __init__(self):
         super(loss, self).__init__()
-        self.r = None
-        self.c = None
+        self.rat_loss = None
+        self.cat_loss = None
 
     def forward(self, ratingOutput, categoryOutput, ratingTarget, categoryTarget):
-        self.r = F.nll_loss(ratingOutput,ratingTarget)
-        self.c = F.nll_loss(categoryOutput,categoryTarget)
+        self.rat_loss = F.nll_loss(ratingOutput, ratingTarget)
+        self.cat_loss = F.nll_loss(categoryOutput, categoryTarget)
         return self
-    
+
     def backward(self):
-        self.r.backward()
-        self.c.backward()
+        self.rat_loss.backward(retain_graph=True)
+        self.cat_loss.backward()
         pass
 
     def item(self):
-        return (self.r.item() + self.c.item())/2
+        return (self.rat_loss.item()+self.cat_loss.item())/2
 
 net = network()
 lossFunc = loss()
@@ -158,5 +154,5 @@ lossFunc = loss()
 
 trainValSplit = 0.8
 batchSize = 32
-epochs = 10
-optimiser = toptim.SGD(net.parameters(), lr=0.01)
+epochs = 25
+optimiser = toptim.SGD(net.parameters(), lr=0.05)
