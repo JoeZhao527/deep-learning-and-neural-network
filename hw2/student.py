@@ -153,7 +153,7 @@ def convertNetOutput(ratingOutput, categoryOutput):
                 c[counter] = j
         counter+=1
 
-    return r, c
+    return r.long(), c.long()
 
 ################################################################################
 ###################### The following determines the model ######################
