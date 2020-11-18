@@ -247,7 +247,7 @@ batchSize = 32
 Although the loss can be lower with more epoche, The weighted score converges to 84 after 20 epochs
 Set an appropirate learning rate to increase the training speed
 '''
-epochs = 20
+epochs = 1
 optimiser = toptim.SGD(net.parameters(), lr=0.05)
 
 ################################################################################
