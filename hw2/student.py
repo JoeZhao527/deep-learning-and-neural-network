@@ -244,10 +244,10 @@ lossFunc = loss()
 trainValSplit = 0.8
 batchSize = 32
 '''
-Although the loss can be lower with more epoche, The weighted score converges to 84 after 20 epochs
+Although the loss can be lower with more epoches, The weighted score converges to 84 after 20 epoches
 Set an appropirate learning rate to increase the training speed
 '''
-epochs = 1
+epochs = 20
 optimiser = toptim.SGD(net.parameters(), lr=0.05)
 
 ################################################################################
