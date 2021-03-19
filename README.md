@@ -1,4 +1,4 @@
-# COMP9444
+# Deep Learning and Nerual Network Project
 ## Project 1 - Characters, Spirals and Hidden Unit Dynamics
 - Part 1 (code in kuzu) is an implementation of deep nerual network to recognize handwritten Hiragana symbols. The dataset to be used is Kuzushiji-MNIST or KMNIST for short.
 - Part 2 (code in spiral) is an experiment on training the famous Two Spirals Problem (Lang and Witbrock, 1988).
